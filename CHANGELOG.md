@@ -1,3 +1,4 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.1] - 6/23/2020.
 
-* TODO: Describe initial release.
+* Added url preview widget.
+
