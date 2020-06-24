@@ -9,6 +9,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   String message = "";
+  final ScrollController listScrollController = ScrollController();
   final TextEditingController textEditingController = TextEditingController();
   _buildMessage(Message message) {
     return message.type == 1
@@ -49,6 +50,7 @@ class _ChatScreenState extends State<ChatScreen> {
           )
         : UrlPreview(
             url: message.text,
+            disableTapCallback: true,
           );
   }
 
@@ -96,6 +98,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   'type': _getMessageType(textEditingController.text),
                 }));
                 textEditingController.clear();
+                listScrollController.animateTo(0.0,
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeOut);
                 setState(() {});
               }
             },
@@ -105,7 +110,9 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  List<Message> messagesList = [];
+  List<Message> messagesList = [
+    Message.fromMap({"text": "https://test.com", "type": 2})
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -113,9 +120,9 @@ class _ChatScreenState extends State<ChatScreen> {
       backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         title: Text(
-          "Chat Screen",
+          "URL Preview Example",
           style: TextStyle(
-            fontSize: 28.0,
+            fontSize: 18.0,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -140,7 +147,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 child: ClipRRect(
                   child: ListView.builder(
-                    reverse: true,
+                    controller: listScrollController,
                     padding: EdgeInsets.only(top: 15.0),
                     itemCount: messagesList.length,
                     itemBuilder: (BuildContext context, int index) {

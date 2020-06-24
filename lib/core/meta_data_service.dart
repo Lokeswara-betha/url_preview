@@ -1,53 +1,57 @@
 import 'package:html/parser.dart';
 import 'package:http/http.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:url_preview/core/models/url_preview_meta.dart';
 
 class MetaDataService {
   static Future<UrlPreviewMeta> getUrlMetaData(url) async {
-    final client = Client();
-    final response = await client.get(_getValidUrl(url));
-    final document = parse(response.body);
+    if (await isPreviewAvaliable(url)) {
+      final client = Client();
+      final response = await client.get(url);
+      final document = parse(response.body);
 
-    String description, title, image, favIcon;
+      String description, title, image, favIcon;
 
-    var elements = document.getElementsByTagName('meta');
-    final linkElements = document.getElementsByTagName('link');
+      var elements = document.getElementsByTagName('meta');
+      final linkElements = document.getElementsByTagName('link');
 
-    elements.forEach((tmp) {
-      if (tmp.attributes['property'] == 'og:title') {
-        title = tmp.attributes['content'];
-      }
-      if (title == null || title.isEmpty) {
-        title = document.getElementsByTagName('title')[0].text;
-      }
+      elements.forEach((tmp) {
+        if (tmp.attributes['property'] == 'og:title') {
+          title = tmp.attributes['content'];
+        }
+        if (title == null || title.isEmpty) {
+          title = document.getElementsByTagName('title')[0].text;
+        }
 
-      if (tmp.attributes['property'] == 'og:description') {
-        description = tmp.attributes['content'];
-      }
-      if (description == null || description.isEmpty) {
-        if (tmp.attributes['name'] == 'description') {
+        if (tmp.attributes['property'] == 'og:description') {
           description = tmp.attributes['content'];
         }
-      }
+        if (description == null || description.isEmpty) {
+          if (tmp.attributes['name'] == 'description') {
+            description = tmp.attributes['content'];
+          }
+        }
 
-      if (tmp.attributes['property'] == 'og:image') {
-        image = tmp.attributes['content'];
-      }
-    });
+        if (tmp.attributes['property'] == 'og:image') {
+          image = tmp.attributes['content'];
+        }
+      });
 
-    linkElements.forEach((tmp) {
-      if (tmp.attributes['rel']?.contains('icon') == true) {
-        favIcon = tmp.attributes['href'];
-      }
-    });
+      linkElements.forEach((tmp) {
+        if (tmp.attributes['rel']?.contains('icon') == true) {
+          favIcon = tmp.attributes['href'];
+        }
+      });
 
-    return UrlPreviewMeta.fromMap({
-      'url': url,
-      'imageUrl': _validateImageUrl(imageUrl: image, url: url),
-      'title': title,
-      'description': description,
-      'favIcon': favIcon,
-    });
+      return UrlPreviewMeta.fromMap({
+        'url': url,
+        'imageUrl': _validateImageUrl(imageUrl: image, url: url),
+        'title': title,
+        'description': description,
+        'favIcon': favIcon,
+      });
+    }
+    return null;
   }
 
   static String _validateImageUrl({String imageUrl, String url}) {
@@ -76,5 +80,10 @@ class MetaDataService {
       return true;
     }
     return false;
+  }
+
+  static Future<bool> isPreviewAvaliable(url) async {
+    url = _getValidUrl(url);
+    return await canLaunch(url);
   }
 }
