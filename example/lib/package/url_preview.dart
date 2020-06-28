@@ -2,8 +2,8 @@ library url_preview;
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_preview/core/meta_data_service.dart';
-import 'package:url_preview/core/models/url_preview_meta.dart';
+import 'package:url_preview_example/package/meta_data_service.dart';
+import 'package:url_preview_example/package/url_preview_meta.dart';
 
 class UrlPreview extends StatelessWidget {
   final Color color;
@@ -12,6 +12,8 @@ class UrlPreview extends StatelessWidget {
   final TextStyle websiteUrlStyle;
   final VoidCallback onTap;
   final bool disableTapCallback;
+  final String url;
+
   UrlPreview(
       {@required this.url,
       this.color,
@@ -20,7 +22,6 @@ class UrlPreview extends StatelessWidget {
       this.disableTapCallback,
       this.descriptionStyle,
       this.websiteUrlStyle});
-  final String url;
 
   launchUrl() {
     launch(this.url);
@@ -49,11 +50,15 @@ class UrlPreview extends StatelessWidget {
                         children: <Widget>[
                           ListTile(
                             leading: Container(
-                              constraints:
-                                  BoxConstraints(maxHeight: 150, maxWidth: 150),
-                              decoration: BoxDecoration(),
-                              child: Image.network(
-                                urlData.imageUrl ?? urlData.favIcon,
+                              height: 100,
+                              width: 100,
+                              margin: EdgeInsets.all(5),
+                              color: Colors.grey.withAlpha(50),
+                              child: FittedBox(
+                                fit: BoxFit.cover,
+                                child: Image.network(
+                                  urlData.imageUrl ?? urlData.favIcon,
+                                ),
                               ),
                             ),
                             title: Text(

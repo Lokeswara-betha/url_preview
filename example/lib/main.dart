@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:url_preview/url_preview.dart';
 import 'package:url_preview_example/models/message.dart';
+import 'package:url_preview_example/package/url_preview.dart';
+
+void main() => runApp(UrlPreviewExample());
+
+class UrlPreviewExample extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: ChatScreen());
+  }
+}
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -137,7 +146,6 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
       body: GestureDetector(
-        // onTap: () => FocusScope.of(context).unfocus(),
         child: Column(
           children: <Widget>[
             Expanded(
